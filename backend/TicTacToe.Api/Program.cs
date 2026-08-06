@@ -1,26 +1,51 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using TicTacToe.Application.Services;
+using TicTacToe.Core.Interfaces;
+using TicTacToe.Repository.Repositories;
+using TicTacToe.Services.Services;
 
-namespace TicTacToe.Api
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers();
+
+builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddCors(options =>
 {
-    public class Program
-    {
-        public static void Main(string[] args)
+    options.AddPolicy("Angular",
+        policy =>
         {
-            CreateHostBuilder(args).Build().Run();
-        }
+            policy
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
-}
+builder.Services.AddSingleton<GameRepository>();
+
+builder.Services.AddSingleton<ScoreboardRepository>();
+
+builder.Services.AddSingleton<IComputerMoveService,
+                              ComputerMoveService>();
+
+builder.Services.AddSingleton<IScoreboardService,
+                              ScoreboardService>();
+
+builder.Services.AddSingleton<IGameService,
+                              GameService>();
+
+var app = builder.Build();
+
+app.UseSwagger();
+
+app.UseSwaggerUI();
+
+app.UseCors("Angular");
+
+app.UseHttpsRedirection();
+
+app.MapControllers();
+
+app.Run();
