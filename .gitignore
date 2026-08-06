@@ -1,0 +1,4 @@
+# Ignore build outputs and Visual Studio workspace
+bin/
+obj/
+.vs/
