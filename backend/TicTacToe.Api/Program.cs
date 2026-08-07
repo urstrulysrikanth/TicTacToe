@@ -23,9 +23,9 @@ builder.Services.AddCors(options =>
         });
 });
 
-builder.Services.AddSingleton<GameRepository>();
+builder.Services.AddSingleton<IGameRepository, GameRepository>();
 
-builder.Services.AddSingleton<ScoreboardRepository>();
+builder.Services.AddSingleton<IScoreboardRepository, ScoreboardRepository>();
 
 builder.Services.AddSingleton<IComputerMoveService,
                               ComputerMoveService>();

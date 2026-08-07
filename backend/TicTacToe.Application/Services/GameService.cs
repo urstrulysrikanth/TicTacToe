@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,18 +9,17 @@ using TicTacToe.Core.Helper;
 using TicTacToe.Core.Interfaces;
 using TicTacToe.Core.Models;
 using TicTacToe.Core.Requests;
-using TicTacToe.Repository.Repositories;
 
 namespace TicTacToe.Application.Services;
 
 public class GameService : IGameService
 {
-    private readonly GameRepository _gameRepository;
+    private readonly IGameRepository _gameRepository;
     private readonly IComputerMoveService _computerMoveService;
     private readonly IScoreboardService _scoreboardService;
 
     public GameService(
-        GameRepository gameRepository,
+        IGameRepository gameRepository,
         IComputerMoveService computerMoveService,
         IScoreboardService scoreboardService)
     {
@@ -51,93 +50,79 @@ public class GameService : IGameService
 
     public GameState MakeMove(Guid id, MoveRequest request)
     {
-        try
+        var game = _gameRepository.Get(id);
+
+        ValidateMove(game, request);
+
+        ApplyMove(
+            game,
+            request.Player,
+            request.Row,
+            request.Column);
+
+        EvaluateGame(game);
+
+        // Computer turn
+        if (game.Mode == GameMode.Computer &&
+            game.Status == GameStatus.InProgress &&
+            game.CurrentPlayer == "O")
         {
-            var game = _gameRepository.Get(id);
-
-            ValidateMove(game, request);
-
-            ApplyMove(
-                game,
-                request.Player,
-                request.Row,
-                request.Column);
-
-            EvaluateGame(game);
-
-            // Computer turn
-            if (game.Mode == GameMode.Computer &&
-                game.Status == GameStatus.InProgress &&
-                game.CurrentPlayer == "O")
-            {
-                ExecuteComputerMove(game);
-            }
-
-            _gameRepository.Update(game);
-
-            return game;
+            ExecuteComputerMove(game);
         }
-        catch (Exception ex)
-        {
-            throw;
-        }
+
+        _gameRepository.Update(game);
+
+        return game;
     }
 
     public GameState Undo(Guid id)
     {
         var game = _gameRepository.Get(id);
 
-        try
+        if (game.Status != GameStatus.InProgress)
+            throw new InvalidOperationException(
+                "Undo is disabled after game completion.");
+
+        if (!game.MoveHistory.Any())
+            throw new InvalidOperationException(
+                "No moves available to undo.");
+
+        if (game.Mode == GameMode.TwoPlayer)
         {
-            if (game.Status != GameStatus.InProgress)
-                throw new InvalidOperationException(
-                    "Undo is disabled after game completion.");
-
-            if (!game.MoveHistory.Any())
-                throw new InvalidOperationException(
-                    "No moves available to undo.");
-
-            if (game.Mode == GameMode.TwoPlayer)
+            RemoveLastMove(game);
+        }
+        else
+        {
+            // Computer mode
+            if (game.MoveHistory.Count >= 2)
             {
+                RemoveLastMove(game);
                 RemoveLastMove(game);
             }
             else
             {
-                // Computer mode
-                if (game.MoveHistory.Count >= 2)
-                {
-                    RemoveLastMove(game);
-                    RemoveLastMove(game);
-                }
-                else
-                {
-                    RemoveLastMove(game);
-                }
+                RemoveLastMove(game);
             }
-
-            game.Status = GameStatus.InProgress;
-            game.Winner = null;
-            game.WinningCells.Clear();
-
-            _gameRepository.Update(game);
-
-            return game;
         }
-        catch (Exception ex)
-        {
-            throw;
-        }
+
+        game.Status = GameStatus.InProgress;
+        game.Winner = null;
+        game.WinningCells.Clear();
+
+        _gameRepository.Update(game);
+
+        return game;
     }
 
     public GameState Reset(Guid id)
     {
         var game = _gameRepository.Get(id);
 
-        game.Board = new string[][]
+        game.Board = new[]
         {
-            new string[3],
-            new string[3],
-            new string[3]
+            new[] { string.Empty, string.Empty, string.Empty },
+            new[] { string.Empty, string.Empty, string.Empty },
+            new[] { string.Empty, string.Empty, string.Empty }
         };
         game.MoveHistory.Clear();
 
@@ -155,34 +140,27 @@ public class GameService : IGameService
         GameState game,
         MoveRequest request)
     {
-        try
+        if (game.Status != GameStatus.InProgress)
+            throw new InvalidOperationException(
+                "Game already completed.");
+
+        if (request.Row < 0 || request.Row > 2)
+            throw new InvalidOperationException(
+                "Invalid row.");
+
+        if (request.Column < 0 || request.Column > 2)
+            throw new InvalidOperationException(
+                "Invalid column.");
+
+        if (request.Player != game.CurrentPlayer)
+            throw new InvalidOperationException(
+                "Not player's turn.");
+
+        if (!string.IsNullOrWhiteSpace(
+                game.Board[request.Row][request.Column]))
         {
-            if (game.Status != GameStatus.InProgress)
-                throw new InvalidOperationException(
-                    "Game already completed.");
-
-            if (request.Row < 0 || request.Row > 2)
-                throw new InvalidOperationException(
-                    "Invalid row.");
-
-            if (request.Column < 0 || request.Column > 2)
-                throw new InvalidOperationException(
-                    "Invalid column.");
-
-            if (request.Player != game.CurrentPlayer)
-                throw new InvalidOperationException(
-                    "Not player's turn.");
-
-            if (!string.IsNullOrWhiteSpace(
-                    game.Board[request.Row][request.Column]))
-            {
-                throw new InvalidOperationException(
-                    "Cell already occupied.");
-            }
-        }
-        catch (Exception ex)
-        {
-            throw;
+            throw new InvalidOperationException(
+                "Cell already occupied.");
         }
     }
 
