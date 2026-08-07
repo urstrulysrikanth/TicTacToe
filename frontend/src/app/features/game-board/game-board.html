@@ -1,0 +1,23 @@
+<div class="board">
+
+  @for (row of board; track $index; let r = $index) {
+
+    <div>
+
+      @for (cell of row; track $index; let c = $index) {
+
+        <button
+          (click)="select((r * 3) + c)"
+          [class.winner]="isWinningCell((r * 3) + c)">
+
+          {{ cell }}
+
+        </button>
+
+      }
+
+    </div>
+
+  }
+
+</div>

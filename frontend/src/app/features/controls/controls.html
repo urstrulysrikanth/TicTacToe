@@ -1,0 +1,14 @@
+<div class="controls">
+
+  <button class="btn undo-btn" (click)="undoClicked.emit()">
+    ↩ Undo Move
+  </button>
+
+  <button class="btn reset-btn" (click)="resetClicked.emit()" style="margin-left: 10px;">
+    🔄 Reset Game
+  </button>
+
+  <button class="btn score-btn" (click)="scoreboardResetClicked.emit()" style="margin-left: 10px;">
+    🏆 Reset Scoreboard
+  </button>
+</div>

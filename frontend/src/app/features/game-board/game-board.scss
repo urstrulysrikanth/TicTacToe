@@ -1,0 +1,32 @@
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.board div {
+  display: flex;
+  gap: 8px;
+}
+
+button {
+  width: 110px;
+  height: 110px;
+  font-size: 48px;
+  font-weight: bold;
+  border: 2px solid #d1d5db;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+button:hover {
+  background: #f3f4f6;
+  transform: scale(1.05);
+}
+
+.winner {
+  background: #86efac !important;
+  border-color: #16a34a !important;
+}

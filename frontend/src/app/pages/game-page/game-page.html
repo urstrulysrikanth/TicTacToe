@@ -1,0 +1,63 @@
+<div class="container">
+
+  <h1 class="title">Tic Tac Toe</h1>
+
+  <app-mode-selector
+    [selectedMode]="selectedMode"
+    (modeChanged)="onModeChanged($event)">
+  </app-mode-selector>
+
+  @if(gameStarted && game){
+
+    <div class="status">
+      {{ statusMessage }}
+    </div>
+
+    @if(errorMessage){
+      <div class="error">
+        {{ errorMessage }}
+      </div>
+
+    }
+
+    <div class="game-layout">
+
+      <!-- Left Side -->
+      <div class="left-panel">
+
+        <app-game-board
+          [board]="game.board"
+          [winningCells]="game.winningCells"
+          (moveSelected)="onCellSelected($event)">
+        </app-game-board>
+
+        <br>
+
+        <app-controls
+          (undoClicked)="undo()"
+          (resetClicked)="resetGame()"
+          (scoreboardResetClicked)="resetScoreboard()">
+        </app-controls>
+
+      </div>
+
+      <!-- Right Side -->
+      <div class="right-panel">
+
+        <app-scoreboard
+          [score]="scoreboard">
+        </app-scoreboard>
+
+        <br>
+
+        <app-move-history
+          [moves]="game.moveHistory">
+        </app-move-history>
+
+      </div>
+
+    </div>
+
+  }
+
+</div>

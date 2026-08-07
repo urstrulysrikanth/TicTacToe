@@ -1,0 +1,17 @@
+<div class="mode-container">
+
+  <button
+    class="mode-btn"
+    [class.active]="selectedMode === 1"
+    (click)="selectTwoPlayer()">
+    Two Player
+  </button>
+
+  <button
+    class="mode-btn"
+    [class.active]="selectedMode === 2"
+    (click)="selectComputer()">
+    Play Against Computer
+  </button>
+
+</div>

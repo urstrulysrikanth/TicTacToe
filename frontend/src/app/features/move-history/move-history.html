@@ -1,0 +1,27 @@
+<table>
+
+    <thead>
+    <tr>
+    <th>#</th>
+    <th>Player</th>
+    <th>Position</th>
+    </tr>
+    </thead>
+    
+    <tbody>
+    
+    <tr *ngFor="let move of moves">
+    
+    <td>{{move.moveNumber}}</td>
+    
+    <td>{{move.player}}</td>
+    
+    <td>
+    ({{move.row}},{{move.column}})
+    </td>
+    
+    </tr>
+    
+    </tbody>
+    
+    </table>
