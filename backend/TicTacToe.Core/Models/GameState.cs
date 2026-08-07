@@ -12,13 +12,12 @@ public class GameState
 {
     public Guid Id { get; set; }
 
-    public string[][] Board { get; set; }
-=
-[
-    ["","",""],
-    ["","",""],
-    ["","",""]
-];
+    public string[][] Board { get; set; } = new[]
+    {
+        new[] { string.Empty, string.Empty, string.Empty },
+        new[] { string.Empty, string.Empty, string.Empty },
+        new[] { string.Empty, string.Empty, string.Empty }
+    };
 
     public string CurrentPlayer { get; set; } = "X";
 

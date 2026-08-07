@@ -6,15 +6,14 @@ using System.Threading.Tasks;
 
 using TicTacToe.Core.Interfaces;
 using TicTacToe.Core.Models;
-using TicTacToe.Repository.Repositories;
 
 namespace TicTacToe.Services.Services;
 
 public class ScoreboardService : IScoreboardService
 {
-    private readonly ScoreboardRepository _repository;
+    private readonly IScoreboardRepository _repository;
 
-    public ScoreboardService(ScoreboardRepository repository)
+    public ScoreboardService(IScoreboardRepository repository)
     {
         _repository = repository;
     }

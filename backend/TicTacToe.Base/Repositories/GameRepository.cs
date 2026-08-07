@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System;
 using TicTacToe.Core.Models;
 using TicTacToe.Repository.Storage;
+using TicTacToe.Core.Interfaces;
 
 namespace TicTacToe.Repository.Repositories
 {
-    public class GameRepository
+    public class GameRepository : IGameRepository
     {
         public void Add(GameState game)
         {
